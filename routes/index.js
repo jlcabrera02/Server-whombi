@@ -1,9 +1,9 @@
-const { Router } = require("express");
-const express = require("express");
-const router = express.Router();
+import Router from "express-promise-router";
 
-router.get("/", (req, res) => {
-  res.send({ response: "I am alive" }).status(200);
+const router = Router();
+
+router.get("/auth", (req, res) => {
+  res.send("<h1>Inicio de secion</h1>");
 });
 
-module.exports = router;
+export default router;
