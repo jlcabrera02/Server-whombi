@@ -1,9 +1,7 @@
 import Router from "express-promise-router";
-
+import conductoresRouter from "./conductores.router";
 const router = Router();
 
-router.get("/auth", (req, res) => {
-  res.send("<h1>Inicio de secion</h1>");
-});
+router.use("/conductor", conductoresRouter);
 
 export default router;

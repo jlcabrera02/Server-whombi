@@ -1,3 +1,5 @@
+import ubicacionesController from "../controllers/ubicaciones.controller";
+
 function Socket(servidor) {
   //Inicializamos socketio
   const socketio = require("socket.io");
@@ -19,9 +21,15 @@ function Socket(servidor) {
 
     //Obtenemos desde el cliente la ubicación
     socket.on("ubicacion", (ubicacion) => {
-      console.log(ubicacion);
+      ubicacionesController.guardarUbicacion({
+        idSocket: socket.id,
+        latitud: ubicacion.latitud,
+        longitud: ubicacion.longitud,
+        presicion: ubicacion.presicion,
+      });
+      /* console.log(ubicacion); */
 
-      socket.emit("sendUbicacion", ubicacion);
+      /* socket.emit("sendUbicacion", ubicacion); */
       //Mandamos a todos los usuarios la ubicación exepto al que la envía
       socket.broadcast.emit("sendUbicacion", ubicacion);
 
