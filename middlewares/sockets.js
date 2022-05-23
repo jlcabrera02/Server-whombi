@@ -1,4 +1,5 @@
 import ubicacionesController from "../controllers/ubicaciones.controller";
+import models from "../models";
 
 function Socket(servidor) {
   //Inicializamos socketio
@@ -16,25 +17,35 @@ function Socket(servidor) {
   //Funcionalidad de socket.io en el servidor
   io.on("connection", (socket) => {
     //Mandamos a consola alerta de nuevo usuario más el id de usuario
-    console.log("usuario conectado");
-    console.log(socket.id);
+
+    ubicacionesController.guardarUbicacion({
+      _id: socket.id,
+      latitud: 0,
+      longitud: 0,
+      presicion: 0,
+      status: 0,
+    });
 
     //Obtenemos desde el cliente la ubicación
     socket.on("ubicacion", (ubicacion) => {
-      ubicacionesController.guardarUbicacion({
-        idSocket: socket.id,
+      console.log("Actualizacion", socket.id);
+      ubicacionesController.actualizarUbicacion({
+        id: socket.id,
         latitud: ubicacion.latitud,
         longitud: ubicacion.longitud,
         presicion: ubicacion.presicion,
+        status: 1,
+        rol: ubicacion.rol,
       });
-      /* console.log(ubicacion); */
 
-      /* socket.emit("sendUbicacion", ubicacion); */
-      //Mandamos a todos los usuarios la ubicación exepto al que la envía
-      socket.broadcast.emit("sendUbicacion", ubicacion);
+      ubicacionesController.listarUbicacion(socket);
 
       socket.on("disconnect", () => {
-        console.log(`El usuario con el id ${socket.id} se a desconectado`);
+        console.log("desconectado", socket.id);
+        ubicacionesController.eliminarUbicacion({
+          id: socket.id,
+          status: 0,
+        });
       });
     });
   });

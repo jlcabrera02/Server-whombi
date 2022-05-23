@@ -3,89 +3,85 @@ import models from "../models";
 export default {
   guardarUbicacion: async (data) => {
     try {
-      const { latitud, longitud, presicion, idSocket } = data;
+      const { _id, latitud, longitud, presicion, idSocket, status } = data;
 
       const personal = new models.Ubicaciones({
+        _id,
         latitud,
         longitud,
         presicion,
         idSocket,
+        status,
       });
 
       const registro = await personal.save();
-      console.log(registro);
-      /* res.status(200).json(registro); */
+      //console.log("Nuevo resgistro", registro);
     } catch (err) {
-      /* res.status(500).send(err);
-      console.log(err); */
-      //next(e);
+      //console.log("Mal resgistro", err);
     }
   },
 
-  listarUbicacion: async (req, res, next) => {
+  listarUbicacion: async (socket) => {
     try {
-      const consultar = await models.Ubicaciones.find({});
-      return consultar;
+      const consultar = await models.Ubicaciones.find({
+        status: true,
+        rol: "conductor",
+      });
+      socket.broadcast.emit("sendUbicacion", consultar);
+      //socket.broadcast.emit("sendUbicacion", consultar);
     } catch (err) {
       return {
         message: "Ocurrió un error al consultar la BD",
       };
-      next(err);
     }
   },
 
-  obtenerUbicacion: async (req, res, next) => {
+  eliminarUbicacion: async ({ id }) => {
     try {
-      const consultarUno = await models.Ubicaciones.findById(req.params.id);
-      if (!consultarUno) {
-        res.status(404).send({
-          message: "El registro en la BD no existe",
-        });
-      } else {
-        res.status(200).json(consultarUno);
-      }
+      const eliminar = await models.Ubicaciones.findByIdAndDelete(id);
+      console.log("eliminacion", eliminar);
     } catch (e) {
-      res.status(500).send({
-        message: "Error en el servidor de la BD",
-      });
-
-      next(e);
+      console.log("error al eliminar la base de datos");
     }
   },
 
-  eliminarUbicacion: async (id) => {
+  actualizarUbicacion: async (data) => {
     try {
-      const eliminar = await models.Ubicaciones.remove({ idSocket: id });
-      /* res.status(200).json(eliminar); */
-    } catch (e) {
-      /* res.status(500).send({
-        message: "Ocurrrio un error al eliminar en la BD",
-      }); */
+      const { latitud, longitud, presicion, status, rol } = data;
 
-      next(e);
-    }
-  },
-
-  actualizarUbicacion: async (req, res, next) => {
-    try {
-      const { latitud, longitud, presicion } = req.body;
-
-      const Aconductor = {
+      const Aubicacion = {
         latitud,
         longitud,
         presicion,
+        status,
+        rol,
       };
 
       const actualizar = await models.Ubicaciones.findByIdAndUpdate(
-        req.params.id,
-        Aconductor
+        data.id,
+        Aubicacion
       );
-      res.status(200).json(actualizar);
-    } catch (e) {
-      res.status(500).send({
-        message: "Ocurrio un error al actualizar información",
-      });
-      next(e);
+      console.log("todo bien", actualizar);
+    } catch (err) {
+      console.log("error", err);
+    }
+  },
+
+  actualizarStatus: async (data) => {
+    try {
+      const { status } = data;
+
+      const Aubicacion = {
+        status,
+      };
+
+      const actualizar = await models.Ubicaciones.findByIdAndUpdate(
+        data.id,
+        Aubicacion
+      );
+      console.log("todo bien en el status", actualizar);
+    } catch (err) {
+      console.log("error", err);
     }
   },
 };
