@@ -97,4 +97,8 @@ export default {
       next(e);
     }
   },
+  ejemplo: (req, res) => {
+    console.log(req.body);
+    res.end();
+  },
 };

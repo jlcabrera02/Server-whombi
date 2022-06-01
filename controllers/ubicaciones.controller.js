@@ -47,7 +47,7 @@ export default {
 
   actualizarUbicacion: async (data) => {
     try {
-      const { latitud, longitud, presicion, status, rol } = data;
+      const { latitud, longitud, presicion, status, rol, id } = data;
 
       const Aubicacion = {
         latitud,
@@ -58,7 +58,7 @@ export default {
       };
 
       const actualizar = await models.Ubicaciones.findByIdAndUpdate(
-        data.id,
+        id,
         Aubicacion
       );
       console.log("todo bien", actualizar);
